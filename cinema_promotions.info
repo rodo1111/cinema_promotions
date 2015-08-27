@@ -1,0 +1,7 @@
+name = Cinema Promotions
+description = Manage the cinema promotions for the site
+package = Prodigious
+core = 7.x
+
+configure = admin/config/content/cinema-promotions
+version = "7.x-1.0"
