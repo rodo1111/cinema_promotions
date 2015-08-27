@@ -114,3 +114,50 @@ function cinema_promotions_menu() {
 	
 	return $items;
 }
+
+/**
+ * Implements hook_block_info().
+ */
+function cinema_promotions_block_info() {
+  $blocks['cinema_promotions'] = array(
+    'info' => t('Cinema Promotions'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function cinema_promotions_block_view($delta = '') {
+  // This example is adapted from node.module.
+  $block = array();
+
+  switch ($delta) {
+    case 'cinema_promotions':
+      $random_factor = variable_get('cinema_promotions_random_factor', 0);
+      $random = rand(0, 100);
+
+      if ($random <= $random_factor) {
+        // Get a random promotion
+        $promotion = db_select('cinema_promotions_data', 'p')
+          ->fields('p')
+          ->orderBy('RAND()')
+          ->range(0, 1)
+          ->execute()
+          ->fetchAssoc();
+
+        if (isset($promotion) && isset($promotion['name'])) {
+          $block['subject'] = t('Cinema Promotions');
+          $block['content'] = '<h2>' . $promotion['name'] . '</h2>' . 
+            '<p>' . $promotion['description'] . '</p>' . 
+            '<p>Use this code to redempt the promotion: <b>' . $promotion['code'] . '</b>.</p>';
+        }
+      }
+
+      break;
+  }
+
+  return $block;
+}
