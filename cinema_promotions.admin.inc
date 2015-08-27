@@ -218,6 +218,60 @@ function cinema_promotions_delete_form_submit($form, &$form_state) {
 }
 
 /**
+ * Form builder 
+ * Form for general Cinema Promotions configuration.
+ *
+ * @see cinema_promotions_configuration_form_submit()
+ * @see cinema_promotions_configuration_form_validate()
+ */
+function cinema_promotions_configuration_form($form, &$form_state) {
+	// Promotions random factor
+	$form['random_factor'] = array(
+    	'#type' => 'textfield',
+    	'#size' => '8',
+    	'#title' => t('Promotions random factor'),
+	    '#default_value' => variable_get('cinema_promotions_random_factor', 0),
+	    '#description' => t('Random factor percentage used to calculate if the promotion should be displayed to the user.'),
+	    '#required' => TRUE,
+	    '#field_suffix' => '%',
+	    '#element_validate' => array('cinema_promotions_configuration_form_validate'),
+	);
+
+	// Form submit button
+  	$form['submit'] = array(
+	    '#type' => 'submit',
+	    '#value' => t('Save'),
+  	);
+
+	return $form;
+}
+
+/**
+ * Function that validates the configuration form when it is submited.
+ */
+function cinema_promotions_configuration_form_validate($element, $form_state) {
+	if (isset($element['#name'])) {
+		// Check if the element is the code of the promotion
+		if ($element['#name'] == 'random_factor') {
+			// Check that the code has only numbers
+			if (!is_numeric($form_state['values']['random_factor'])) {
+				form_set_error($element['#name'], 
+	  				t('The random factor should have only numbers.'));
+			}
+		}
+	}
+}
+
+/**
+ * Function to save the promotion configurations to the database.
+ */
+function cinema_promotions_configuration_form_submit($form, &$form_state) {
+	variable_set('cinema_promotions_random_factor', $form_state['values']['random_factor']);
+	drupal_set_message(t('The configuration was saved successfully.'));
+	$form_state['redirect'] = CINEMA_PROMOTIONS_CONFIG_PATH;
+}
+
+/**
  * Private function to retrieve the endpoints from the database
  */
 function _get_promotions_from_db() {

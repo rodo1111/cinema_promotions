@@ -1,0 +1,116 @@
+<?php
+
+/**
+ * @file
+ * Cinema Promotions module
+ */
+
+/**
+  * Constants
+  */
+define('CINEMA_PROMOTIONS_PATH', 'admin/config/content/cinema-promotions');
+define('CINEMA_PROMOTIONS_DATA_PATH', CINEMA_PROMOTIONS_PATH . '/promotions');
+define('CINEMA_PROMOTIONS_CONFIG_PATH', CINEMA_PROMOTIONS_PATH . '/config');
+define('CINEMA_PROMOTIONS_ADMIN_FILE', 'cinema_promotions.admin.inc');
+define('CINEMA_PROMOTIONS_PERMISSIONS', 'administer junar client manager');
+
+/**
+ * Implements hook_help().
+ */
+function cinema_promotions_help($path, $arg) {
+	switch ($path) {
+		case 'admin/help#cinema_promotions':
+			$output = '<h3>' . t('About') . '</h3>';
+			$output .= t('Prodigious Cinema Promotions to manage the data to display to the users.');
+			return $output;	
+		case CINEMA_PROMOTIONS_PATH:
+  		return '<p>' . t('Configure the Cinema Promotions.') . '</p>';
+	}
+}
+
+/**
+ * Implements hook_permission().
+ */
+function cinema_promotions_permission() {
+  return array(
+    CINEMA_PROMOTIONS_PERMISSIONS => array(
+      'title' => t('Manage Cinema Promotions'),
+      'description' => t('Administer Cinema Promootions data.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function cinema_promotions_menu() {
+	$items = array();
+	
+	// Main Cinema Promotions configuration menu link
+	$items[CINEMA_PROMOTIONS_PATH] = array(
+  	'title' => 'Cinema Promotions',
+  	'description' => 'Configure the Cinema Promotions',
+  	'page callback' => 'cinema_promotions_overview',
+  	'access arguments' => array(CINEMA_PROMOTIONS_PERMISSIONS),
+  	'type' => MENU_NORMAL_ITEM,
+    'weight' => 1,
+    'file' => CINEMA_PROMOTIONS_ADMIN_FILE,
+	);
+	
+	// Promotions tab menu link
+	$items[CINEMA_PROMOTIONS_DATA_PATH] = array(
+  	'title' => 'Cinema Promotions',
+  	'description' => 'Configure the Cinema Promotions',
+  	'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 1,
+  	'file' => CINEMA_PROMOTIONS_ADMIN_FILE,
+	);
+
+// Add promotion menu link  	
+	$items[CINEMA_PROMOTIONS_DATA_PATH . '/add'] = array(
+    'title' => 'Add promotion',
+    'description' => 'Add a new cinema promotion.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cinema_promotions_form'),
+    'access arguments' => array(CINEMA_PROMOTIONS_PERMISSIONS),
+    'type' => MENU_LOCAL_ACTION,
+    'weight' => 11,
+    'file' => CINEMA_PROMOTIONS_ADMIN_FILE,
+	);
+	
+	// Edit promotion menu link  	
+	$items[CINEMA_PROMOTIONS_DATA_PATH . '/edit/%'] = array(
+		'title' => 'Edit promotion',
+    'description' => 'Edit a cinema promotion.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cinema_promotions_form', 6),
+    'access arguments' => array(CINEMA_PROMOTIONS_PERMISSIONS),
+    'weight' => 12,
+    'file' => CINEMA_PROMOTIONS_ADMIN_FILE,
+	);
+	
+	// Delete endpoint menu link  	
+	$items[CINEMA_PROMOTIONS_DATA_PATH . '/delete/%'] = array(
+		'title' => 'Delete promotion',
+    'description' => 'Delete a promotion.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cinema_promotions_delete_form', 6),
+    'access arguments' => array(CINEMA_PROMOTIONS_PERMISSIONS),
+    'weight' => 13,
+    'file' => CINEMA_PROMOTIONS_ADMIN_FILE,
+	);
+	
+	// Datasets tab menu link
+	$items[CINEMA_PROMOTIONS_CONFIG_PATH] = array(
+  	'title' => 'Configuration',
+  	'description' => 'Manage the Cinema Promotions configuration',
+  	'page callback' => 'drupal_get_form',
+    'page arguments' => array('cinema_promotions_configuration_form'),
+  	'access arguments' => array(CINEMA_PROMOTIONS_PERMISSIONS),
+  	'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  	'file' => CINEMA_PROMOTIONS_ADMIN_FILE,
+	);
+	
+	return $items;
+}
