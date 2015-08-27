@@ -1,0 +1,99 @@
+<?php
+
+/**
+ * @file
+ * Cinema Promotions module install file.
+ */
+ 
+/**
+ *	Implements hook_schema().
+ */
+function cinema_promotions_schema() {
+	// Endpoints table
+	$schema['cinema_promotions_data'] = array(
+		'description' => 'Cinema Promotions Data.',
+		'fields' => array(
+      		'pid' => array(
+		        'type' => 'serial',
+		        'unsigned' => TRUE,
+		        'not null' => TRUE,
+		        'description' => 'Primary Key: Unique value ID for the promotion.',
+			),
+			'name' => array(
+		        'type' => 'varchar',
+		        'length' => 128,
+		        'not null' => TRUE,
+		        'default' => '',
+		        'description' => 'Name of the promotion.',
+		    ),
+		    'code' => array(
+		        'type' => 'varchar',
+		        'length' => 64,
+		        'not null' => TRUE,
+		        'default' => '',
+		        'description' => 'Code of the promotion.',
+		    ),
+		    'description' => array(
+		        'type' => 'text',
+		        'not null' => TRUE,
+		        'description' => 'Description of the promotion.',
+		    ),
+		),
+		'primary key' => array('pid'),
+		'indexes' => array(
+			'name_index' => array('name'),
+		),
+	);
+	
+	$schema['cinema_promotions_redemptions'] = array(
+		'description' => 'Cinema Promotions Redemptions.',
+		'fields' => array(
+      		'rid' => array(
+		        'type' => 'serial',
+		        'unsigned' => TRUE,
+		        'not null' => TRUE,
+		        'description' => 'Primary Key: Unique value ID for the redemtion.',
+			),
+		    'pid' => array(
+		        'type' => 'int',
+		        'size' => 'normal',
+		        'unsigned' => TRUE,
+		        'not null' => TRUE,
+		        'description' => 'ID of the promotion to redempt.',
+		    ),
+		    'uid' => array(
+		        'type' => 'int',
+		        'size' => 'normal',
+		        'unsigned' => TRUE,
+		        'not null' => TRUE,
+		        'description' => 'ID of the user that redempts the promotion.',
+		    ),
+		    'date' => array(
+		        'type' => 'int',
+		        'size' => 'normal',
+		        'not null' => TRUE,
+		        'default' => 0,
+		        'description' => 'Date when the promotion is redempted.',
+		    ),
+		),
+		'primary key' => array('rid'),
+		'indexes' => array(
+			'uid_index' => array('uid'),
+			'pid_index' => array('pid'),
+		),
+		'foreign keys' => array(
+      		'promotions' => array(
+        		'table' => 'cinema_promotions_data', 
+        		'columns' => array('pid' => 'pid'),
+      		),
+      		'users' => array(
+        		'table' => 'users', 
+        		'columns' => array('uid' => 'uid'),
+      		),
+      	), 
+	);  
+  	
+  	return $schema;
+} 
+ 
+?>
